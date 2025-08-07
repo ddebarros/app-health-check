@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Check App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏥 Health Check App</h1>
+            <p>Control the status of your health endpoint</p>
+        </header>
+
+        <main>
+            <div class="status-card">
+                <h2>Current Status</h2>
+                <div class="status-indicator" id="statusIndicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span class="status-text" id="statusText">Loading...</span>
+                </div>
+            </div>
+
+            <div class="control-card">
+                <h2>Toggle Health Status</h2>
+                <button class="toggle-btn" id="toggleBtn">
+                    <span class="btn-text">Toggle Status</span>
+                </button>
+                <p class="help-text">Click the button to switch between healthy (200) and unhealthy (500) status</p>
+            </div>
+
+            <div class="endpoint-card">
+                <h2>Health Endpoint</h2>
+                <div class="endpoint-info">
+                    <code class="endpoint-url">GET /health</code>
+                    <button class="test-btn" id="testBtn">Test Endpoint</button>
+                </div>
+                <div class="response-area" id="responseArea">
+                    <p class="response-placeholder">Click "Test Endpoint" to see the response</p>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>Health Check App - Monitor and control your service status</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 

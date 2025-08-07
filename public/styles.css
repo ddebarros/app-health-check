@@ -1,0 +1,206 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: #333;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 3rem;
+    color: white;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+main {
+    display: grid;
+    gap: 2rem;
+}
+
+.status-card,
+.control-card,
+.endpoint-card {
+    background: white;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.status-card h2,
+.control-card h2,
+.endpoint-card h2 {
+    margin-bottom: 1.5rem;
+    color: #2d3748;
+    font-size: 1.5rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.status-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    transition: background-color 0.3s ease;
+}
+
+.status-dot.healthy {
+    background: #48bb78;
+    box-shadow: 0 0 0 4px rgba(72, 187, 120, 0.2);
+}
+
+.status-dot.unhealthy {
+    background: #f56565;
+    box-shadow: 0 0 0 4px rgba(245, 101, 101, 0.2);
+}
+
+.status-text.healthy {
+    color: #48bb78;
+}
+
+.status-text.unhealthy {
+    color: #f56565;
+}
+
+.toggle-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.toggle-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.toggle-btn:active {
+    transform: translateY(0);
+}
+
+.help-text {
+    margin-top: 1rem;
+    color: #718096;
+    font-size: 0.9rem;
+}
+
+.endpoint-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.endpoint-url {
+    background: #f7fafc;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    color: #4a5568;
+}
+
+.test-btn {
+    background: #4299e1;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.test-btn:hover {
+    background: #3182ce;
+}
+
+.response-area {
+    background: #f7fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 1rem;
+    min-height: 100px;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.response-placeholder {
+    color: #a0aec0;
+    font-style: italic;
+}
+
+.response-success {
+    color: #48bb78;
+}
+
+.response-error {
+    color: #f56565;
+}
+
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    color: white;
+    opacity: 0.8;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+    
+    header h1 {
+        font-size: 2rem;
+    }
+    
+    .endpoint-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .status-card,
+    .control-card,
+    .endpoint-card {
+        padding: 1.5rem;
+    }
+} 
