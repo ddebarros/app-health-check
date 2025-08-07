@@ -1,64 +1,69 @@
 const express = require("express");
 const path = require("path");
+const pino = require("pino");
+
+// Create Pino logger
+const logger = pino({
+  level: process.env.LOG_LEVEL || "info",
+  transport: {
+    target: "pino-pretty",
+    options: {
+      colorize: true,
+      translateTime: "SYS:standard",
+      ignore: "pid,hostname",
+    },
+  },
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Request logging middleware
+// Request logging middleware using Pino
 app.use((req, res, next) => {
   const start = Date.now();
-  const timestamp = new Date().toISOString();
 
   // Log request details
-  console.log(
-    `[${timestamp}] ${req.method} ${req.url} - ${req.ip} - User-Agent: ${
-      req.get("User-Agent") || "Unknown"
-    }`
+  logger.info(
+    {
+      type: "request",
+      method: req.method,
+      url: req.url,
+      ip: req.ip,
+      userAgent: req.get("User-Agent") || "Unknown",
+      query: Object.keys(req.query).length > 0 ? req.query : undefined,
+      body:
+        req.method === "POST" || req.method === "PUT" ? req.body : undefined,
+    },
+    "Incoming request"
   );
-
-  // Log request body for POST/PUT requests
-  if (req.method === "POST" || req.method === "PUT") {
-    console.log(
-      `[${timestamp}] Request Body:`,
-      JSON.stringify(req.body, null, 2)
-    );
-  }
-
-  // Log query parameters
-  if (Object.keys(req.query).length > 0) {
-    console.log(
-      `[${timestamp}] Query Parameters:`,
-      JSON.stringify(req.query, null, 2)
-    );
-  }
 
   // Override res.end to log response details
   const originalEnd = res.end;
   res.end = function (chunk, encoding) {
     const duration = Date.now() - start;
-    const statusCode = res.statusCode;
-    const statusText = res.statusMessage || "";
 
-    console.log(
-      `[${timestamp}] ${req.method} ${req.url} - ${statusCode} ${statusText} - ${duration}ms`
-    );
-
-    // Log response body for API endpoints
+    // Parse response body for API endpoints
+    let responseBody;
     if (req.url.startsWith("/api/") || req.url === "/health") {
       try {
-        const responseBody = chunk ? JSON.parse(chunk.toString()) : {};
-        console.log(
-          `[${timestamp}] Response Body:`,
-          JSON.stringify(responseBody, null, 2)
-        );
+        responseBody = chunk ? JSON.parse(chunk.toString()) : {};
       } catch (e) {
-        // If response is not JSON, log as string
-        console.log(
-          `[${timestamp}] Response Body:`,
-          chunk ? chunk.toString() : ""
-        );
+        responseBody = chunk ? chunk.toString() : "";
       }
     }
+
+    logger.info(
+      {
+        type: "response",
+        method: req.method,
+        url: req.url,
+        statusCode: res.statusCode,
+        statusMessage: res.statusMessage || "",
+        duration: `${duration}ms`,
+        responseBody: responseBody,
+      },
+      "Request completed"
+    );
 
     originalEnd.call(this, chunk, encoding);
   };
@@ -75,10 +80,12 @@ let isHealthy = true;
 
 // Health check endpoint
 app.get("/health", (req, res) => {
-  console.log(
-    `[${new Date().toISOString()}] Health check requested - Current status: ${
-      isHealthy ? "healthy" : "unhealthy"
-    }`
+  logger.info(
+    {
+      type: "health_check",
+      status: isHealthy ? "healthy" : "unhealthy",
+    },
+    "Health check requested"
   );
 
   if (isHealthy) {
@@ -101,10 +108,13 @@ app.post("/api/toggle-health", (req, res) => {
   const previousStatus = isHealthy;
   isHealthy = !isHealthy;
 
-  console.log(
-    `[${new Date().toISOString()}] Health status toggled from ${
-      previousStatus ? "healthy" : "unhealthy"
-    } to ${isHealthy ? "healthy" : "unhealthy"}`
+  logger.info(
+    {
+      type: "health_toggle",
+      previousStatus: previousStatus ? "healthy" : "unhealthy",
+      newStatus: isHealthy ? "healthy" : "unhealthy",
+    },
+    "Health status toggled"
   );
 
   res.json({
@@ -115,10 +125,12 @@ app.post("/api/toggle-health", (req, res) => {
 
 // API endpoint to get current health status
 app.get("/api/health-status", (req, res) => {
-  console.log(
-    `[${new Date().toISOString()}] Health status API requested - Current status: ${
-      isHealthy ? "healthy" : "unhealthy"
-    }`
+  logger.info(
+    {
+      type: "health_status",
+      status: isHealthy ? "healthy" : "unhealthy",
+    },
+    "Health status API requested"
   );
 
   res.json({
@@ -134,11 +146,15 @@ app.get("/", (req, res) => {
 
 // 404 handler for unmatched routes
 app.use((req, res) => {
-  console.log(
-    `[${new Date().toISOString()}] 404 - Route not found: ${req.method} ${
-      req.url
-    }`
+  logger.warn(
+    {
+      type: "not_found",
+      method: req.method,
+      url: req.url,
+    },
+    "Route not found"
   );
+
   res.status(404).json({
     error: "Not Found",
     message: `Route ${req.method} ${req.url} not found`,
@@ -147,13 +163,12 @@ app.use((req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(
-    `[${new Date().toISOString()}] Health check app running on http://localhost:${PORT}`
-  );
-  console.log(
-    `[${new Date().toISOString()}] Health endpoint: http://localhost:${PORT}/health`
-  );
-  console.log(
-    `[${new Date().toISOString()}] Request logging enabled - all requests will be logged`
+  logger.info(
+    {
+      type: "server_start",
+      port: PORT,
+      healthEndpoint: `http://localhost:${PORT}/health`,
+    },
+    "Health check app started"
   );
 });
