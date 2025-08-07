@@ -13,6 +13,8 @@ let isHealthy = true;
 
 // Health check endpoint
 app.get("/health", (req, res) => {
+  console.log("Health status requested: ", isHealthy);
+
   if (isHealthy) {
     res.status(200).json({
       status: "healthy",
